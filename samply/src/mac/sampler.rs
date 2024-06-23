@@ -120,6 +120,7 @@ impl Sampler {
         let mut last_sleep_overshoot = 0;
         let mut stop_profiling = false;
 
+        // samplingのloop
         loop {
             loop {
                 let task_init_or_shutdown = if !live_tasks.is_empty() {
@@ -213,6 +214,7 @@ impl Sampler {
             let before_sleep = get_monotonic_timestamp();
             let indended_wait_time = intended_wakeup_time.saturating_sub(before_sleep);
             let sleep_time = indended_wait_time.saturating_sub(last_sleep_overshoot);
+            // MEMO: ここでsleepして sampling を調節してる？
             thread::sleep(Duration::from_nanos(sleep_time));
             let actual_sleep_duration = get_monotonic_timestamp() - before_sleep;
             last_sleep_overshoot = actual_sleep_duration.saturating_sub(sleep_time);

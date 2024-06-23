@@ -516,6 +516,20 @@ pub fn get_backtrace(
     Ok(())
 }
 
+// MEMO: ここが一番大事な関数
+// * stackwalkerRef:
+//   * unwinder_cache
+//     * let mut unwinder_cache = Default::default(); でいける？
+//   * unwinder
+//     * UnwinderNative::new() でいける？
+// * pc
+//   * get_unwinding_registers()でやってることを真似すればいけそう (macだと, thread_get_state() というapiを使ってる)
+// * regs
+//   * get_unwinding_registers()でやってることを真似すればいけそう (macだと, thread_get_state() というapiを使ってる)
+// * memory
+//   * unsafeでもokとかであれば, memをそのまま読めば可能ではありそう
+// * frames
+//   * これもただのvecを用意すれば良さげ？
 /// `frames` must be empty initially.
 ///
 /// On return, `frames` will have the stack frames from callee-most to root-most.
@@ -531,6 +545,7 @@ fn do_stackwalk(
             // Unaligned address
             return Err(());
         }
+        // MEMO: シンプルに addr で渡ってきてるメモリの値を読んでるだけ.
         memory.read_u64_at_address(addr).map_err(|_| ())
     };
 

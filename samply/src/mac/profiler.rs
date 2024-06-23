@@ -90,6 +90,7 @@ pub fn start_recording(
 
     let (task_sender, task_receiver) = unbounded();
 
+    // MEMO: samplingをするthread
     let sampler_thread = thread::spawn(move || {
         let sampler = Sampler::new(
             profile_name,
@@ -176,6 +177,7 @@ pub fn start_recording(
         }
     });
 
+    // MEMO: TaskLauncher だった場合, programがstartするよ
     // Run the root task: either launch or attach to existing pid
     let exit_status = root_task_runner.run_root_task()?;
 
