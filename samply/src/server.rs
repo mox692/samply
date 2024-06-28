@@ -167,6 +167,7 @@ async fn start_server(
     let config = create_symbol_manager_config(symbol_props, server_props.verbose);
     let mut symbol_manager = SymbolManager::with_config(config);
     for lib_info in libinfo_map.into_values() {
+        // なんかlibを追加してる
         symbol_manager.add_known_library(lib_info);
     }
 

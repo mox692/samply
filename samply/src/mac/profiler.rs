@@ -229,6 +229,7 @@ pub fn start_recording(
         )
         .expect("Couldn't parse libinfo map from profile file");
 
+        // TODOS: libinfo_map どうやって撮ってる？
         start_server_main(&output_file, server_props, symbol_props, libinfo_map);
     }
 

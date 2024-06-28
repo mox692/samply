@@ -65,6 +65,8 @@ impl<'a, H: FileAndPathHelper> SymbolicateApi<'a, H> {
         symbolicated_addresses
     }
 
+    // MEMO: ここでsymbol解決やってそう？
+    // TODOS: addressとlibのpairは, 呼び出し元からどのように選択されんの？
     async fn symbolicate_requested_addresses_for_lib(
         &self,
         lib: &Lib,
@@ -89,11 +91,14 @@ impl<'a, H: FileAndPathHelper> SymbolicateApi<'a, H> {
             debug_id: Some(debug_id),
             ..Default::default()
         };
+        // println!("libinfo: {:?}", &info);
+        // symbolmapをsymbol_managerからloadする
         let symbol_map = self.symbol_manager.load_symbol_map(&info).await?;
 
         symbolication_result.set_total_symbol_count(symbol_map.symbol_count() as u32);
 
         for &address in &addresses {
+            // ここでlookupしてそう
             if let Some(address_info) = symbol_map.lookup_sync(LookupAddress::Relative(address)) {
                 symbolication_result.add_address_symbol(
                     address,
