@@ -424,10 +424,12 @@ impl<T: FileContents + 'static> ObjectSymbolMapOuter<T> for FileDataAndObject<T>
 }
 
 pub fn get_symbol_map_for_macho<H: FileAndPathHelper>(
+    // helloの場合, binary
     debug_file_location: H::FL,
     file_contents: FileContentsWrapper<H::F>,
     helper: Arc<H>,
 ) -> Result<SymbolMap<H>, Error> {
+    // 複雑...
     let owner = FileDataAndObject::new(Box::new(MachSymbolMapData(file_contents)))?;
     let symbol_map = ObjectSymbolMap::new(owner)?;
     Ok(SymbolMap::new_with_external_file_support(

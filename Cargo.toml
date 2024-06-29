@@ -2,6 +2,7 @@
 resolver = "2"
 default-members = ["samply"]
 members = [
+    "examples",
     "fxprof-processed-profile",
     "gecko_profile",
     "samply-api",
@@ -36,3 +37,6 @@ precise-builds = true
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+[profile.release]
+debug = true

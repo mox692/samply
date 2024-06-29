@@ -304,6 +304,7 @@ where
     /// Obtain a symbol map for the library, given the (partial) `LibraryInfo`.
     /// At least the debug_id has to be given.
     pub async fn load_symbol_map(&self, library_info: &LibraryInfo) -> Result<SymbolMap<H>, Error> {
+        // MEMO: helloの場合は, ここがNoneになった
         if let Some((fl, symbol_map)) = self
             .helper()
             .as_ref()
@@ -317,6 +318,7 @@ where
             None => return Err(Error::NotEnoughInformationToIdentifySymbolMap),
         };
 
+        // MEMO: helloの場合, binarhnpathがそのままcandidateになった
         let candidate_paths = self
             .helper
             .get_candidate_paths_for_debug_file(library_info)
@@ -331,8 +333,9 @@ where
         for candidate_info in candidate_paths {
             let symbol_map = match candidate_info {
                 CandidatePathInfo::SingleFile(file_location) => {
+                    // MEMO: helloの場合はここ
                     self.load_symbol_map_from_location(
-                        file_location,
+                        file_location, // binaryのファイルパス
                         Some(MultiArchDisambiguator::DebugId(debug_id)),
                     )
                     .await
@@ -549,8 +552,10 @@ where
         file_location: FL,
         multi_arch_disambiguator: Option<MultiArchDisambiguator>,
     ) -> Result<SymbolMap<H>, Error> {
+        // binary全部をmmapしたもの
         let file_contents = self
             .helper
+            // helloの場合, helper.rs
             .load_file(file_location.clone())
             .await
             .map_err(|e| Error::HelperErrorDuringOpenFile(file_location.to_string(), e))?;
@@ -582,6 +587,7 @@ where
                     )
                 }
                 FileKind::MachO32 | FileKind::MachO64 => {
+                    // macのhelloの場合こっち
                     macho::get_symbol_map_for_macho(file_location, file_contents, self.helper())
                 }
                 FileKind::Pe32 | FileKind::Pe64 => {

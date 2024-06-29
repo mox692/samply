@@ -194,6 +194,7 @@ impl FileReadOnlyHelper {
     ) -> FileAndPathHelperResult<WholesymFileContents> {
         match location {
             WholesymFileLocation::LocalFile(path) => {
+                // そのままbinaryをmmapしてるわ
                 let file = File::open(path)?;
                 Ok(WholesymFileContents::Mmap(unsafe {
                     memmap2::MmapOptions::new().map(&file)?
@@ -229,6 +230,7 @@ impl FileAndPathHelper for FileReadOnlyHelper {
         location: WholesymFileLocation,
     ) -> std::pin::Pin<Box<dyn OptionallySendFuture<Output = FileAndPathHelperResult<Self::F>> + '_>>
     {
+        // helloの場合
         Box::pin(self.load_file_impl(location))
     }
 

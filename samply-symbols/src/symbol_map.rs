@@ -41,6 +41,7 @@ pub trait GetInnerSymbolMapWithLookupFramesExt<FC> {
 
 enum InnerSymbolMap<FC> {
     WithoutAddFile(Box<dyn GetInnerSymbolMap + Send + Sync>),
+    // MEMO: helloの場合はこれ
     WithAddFile(Box<dyn GetInnerSymbolMapWithLookupFramesExt<FC> + Send + Sync>),
     Direct(Arc<dyn SymbolMapTrait + Send + Sync>),
 }
@@ -115,6 +116,7 @@ impl<H: FileAndPathHelper> SymbolMap<H> {
     }
 
     pub async fn lookup(&self, address: LookupAddress) -> Option<AddressInfo> {
+        // helloの場合, samply-symbols/src/symbol_map_object.rs へ。
         let address_info = self.inner().lookup_sync(address)?;
         let symbol = address_info.symbol;
         let (mut external, inner) = match (address_info.frames, &self.inner) {
