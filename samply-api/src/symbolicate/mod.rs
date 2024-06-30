@@ -91,13 +91,14 @@ impl<'a, H: FileAndPathHelper> SymbolicateApi<'a, H> {
             debug_id: Some(debug_id),
             ..Default::default()
         };
-        // println!("libinfo: {:?}", &info);
         // symbolmapをsymbol_managerからloadする
         let symbol_map = self.symbol_manager.load_symbol_map(&info).await?;
 
         symbolication_result.set_total_symbol_count(symbol_map.symbol_count() as u32);
 
+        // print!("lookup addr of {:?} ", &info);
         for &address in &addresses {
+            // print!("{:?}, ", address as *const ());
             // ここでlookupしてそう
             if let Some(address_info) = symbol_map.lookup_sync(LookupAddress::Relative(address)) {
                 symbolication_result.add_address_symbol(
@@ -117,6 +118,8 @@ impl<'a, H: FileAndPathHelper> SymbolicateApi<'a, H> {
                 }
             }
         }
+        // println!("");
+        // println!("");
 
         // Look up any addresses whose debug info is in an external file.
         // The symbol_manager caches the most recent external file, so we sort our
@@ -142,12 +145,15 @@ fn gather_requested_addresses(
         let mut requested_addresses_by_module_index: HashMap<u32, Vec<u32>> = HashMap::new();
         for stack in &job.stacks {
             for frame in &stack.0 {
+                // print!("frame.address: {:?}, ", frame.address as *const ());
                 requested_addresses_by_module_index
                     .entry(frame.module_index)
                     .or_default()
                     .push(frame.address);
             }
         }
+        // println!("");
+        // println!("");
         for (module_index, addresses) in requested_addresses_by_module_index {
             let lib = job.memory_map.get(module_index as usize).ok_or(
                 Error::ParseRequestErrorContents("Stack frame module index beyond the memoryMap"),

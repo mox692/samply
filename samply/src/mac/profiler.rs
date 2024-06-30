@@ -208,6 +208,7 @@ pub fn start_recording(
         }
     };
 
+    // profilerのjsonをファイルに保存
     {
         // Write the profile to a file.
         let file = File::create(&output_file).unwrap();

@@ -515,6 +515,17 @@ where
     }
 
     fn lookup_sync(&self, address: LookupAddress) -> Option<SyncAddressInfo> {
+        //
+        //            0 --------
+        //
+        //
+        // base_address -------- ^
+        //                       |
+        //                       | relative_address
+        //                       |
+        //         svma -------- v
+        //
+        //
         let (svma, relative_address) = match address {
             LookupAddress::Relative(relative_address) => (
                 self.image_base_address
@@ -533,6 +544,10 @@ where
                 )
             }
         };
+        // println!(
+        //     "svma: {:?}, relative_address: {:?}, image_base_address: {:?}",
+        //     svma, relative_address, self.image_base_address
+        // );
         let (start_addr, end_addr, name) = self.list.lookup_relative_address(relative_address)?;
         let function_size = end_addr - start_addr;
         let name = demangle::demangle_any(&name);

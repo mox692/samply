@@ -1,6 +1,4 @@
-//! macos(x86) で, stack unwindがどのようにできるかテスト
-//!
-//! * 実行スレッドの情報(レジスタの値とか)を取得
+//! Example project
 
 #[cfg(target_arch = "x86_64")]
 use framehop::x86_64::UnwindRegsX86_64;
@@ -48,7 +46,7 @@ async fn baz() {
         (rip, UnwindRegsX86_64::new(rip, rsp, rbp))
     };
 
-    println!("rip: {:?}", rip as usize as *const ());
+    println!("rip: {:?}", rip as usize as *const ()); // debug-rip: 0x100047ca2 , binary-rip: 0x10345aca2, 0x109d26ca2, 0x108dd2ca2
     println!("regs: {:?}", &regs);
 
     let mut iter = unwinder.iter_frames(rip, regs, &mut cache, &mut read_stack);
@@ -57,22 +55,23 @@ async fn baz() {
 
     // print frame
     while let Ok(Some(frame)) = iter.next() {
-        for i in (0..8).into_iter() {
-            let addr = frame.clone().address() as usize as *const ();
-            let addr2 = frame.address_for_lookup() as usize as *const ();
-            let s = symbol_map.lookup(LookupAddress::FileOffset(0x9ec9)).await;
-            println!(
-                "********** {}  addr: {:?}, addr2: {:?} sym: {:?}",
-                i,
-                addr,
-                addr2,
-                s // symbol_map.lookup_sync(LookupAddress::FileOffset(addr as usize as u64 - i as u64)),
-                  // symbol_map.lookup_sync(LookupAddress::Svma(addr as usize as u64 - i as u64))
-            );
-        }
-        println!("addr: {:?}", frame.address() as u32 as *const ());
+        let addr2 = frame.address_for_lookup() as usize;
+        // since we are searching binary file (not dylib).
+        let relative_addr = addr2 - 0x100000000;
+        let symbol = symbol_map
+            .lookup(LookupAddress::Relative(relative_addr as u32))
+            .await;
+        // println!(
+        //     "********** svma: {:?}, relative_addr: {:?}, sym: {:?}",
+        //     addr2 as *const (), relative_addr as *const (), symbol
+        // );
     }
-    println!("");
+
+    // manual
+    // addr: 0x10000086d, sym: "__ZN5hello18fofsadfklhflkadfsa28_$u7b$$u7b$closure$u7d$$u7d$17h0ac7948ac1096cb8E"
+    let symbol = symbol_map.lookup(LookupAddress::Svma(0x100000010)).await;
+
+    println!("manulllllll symbol: {:?}", &symbol);
 }
 
 async fn create_symbol_manager() -> SymbolMap {
@@ -85,11 +84,13 @@ async fn create_symbol_manager() -> SymbolMap {
         .await
         .unwrap();
 
-    for (addr, (idx, sym)) in symbol_map.iter_symbols().enumerate() {
-        if sym.contains("fofsadfklhflkadfsa") {
-            println!("addr: {:?}, sym: {:?}", addr as *const (), sym);
-        }
-    }
+    // for (addr, (idx, sym)) in symbol_map.iter_symbols().enumerate() {
+    //     println!(
+    //         "addr: {:?}, sym: {:?}",
+    //         (addr + 0x100000000) as *const (),
+    //         sym
+    //     );
+    // }
 
     symbol_map
 }

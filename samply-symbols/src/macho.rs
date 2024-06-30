@@ -407,6 +407,7 @@ impl<T: FileContents + 'static> ObjectSymbolMapOuter<T> for FileDataAndObject<T>
         let (function_starts, function_ends) = compute_function_addresses_macho(macho_data, object);
         let debug_id = debug_id_for_object(object)
             .ok_or(Error::InvalidInputError("debug ID cannot be read"))?;
+        // MEMO: ここで, image_base_addr を入れてる
         let symbol_map = ObjectSymbolMapInnerWrapper::new(
             object,
             addr2line_context

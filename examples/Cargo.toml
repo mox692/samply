@@ -46,3 +46,7 @@ debug = true
 [[example]]
 name = "hello"
 path = "hello.rs"
+
+[[example]]
+name = "parent"
+path = "parent.rs"

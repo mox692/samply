@@ -611,6 +611,7 @@ impl SourceFilePath {
     }
 }
 
+// MEMO: 知りたかったbase_addrの情報がここにあったわ
 /// The "relative address base" is the base address which [`LookupAddress::Relative`]
 /// addresses are relative to. You start with an SVMA (a stated virtual memory address),
 /// you subtract the relative address base, and out comes a relative address.
