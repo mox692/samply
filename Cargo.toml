@@ -2,6 +2,7 @@
 resolver = "2"
 default-members = ["samply"]
 members = [
+    "benches",
     "examples",
     "fxprof-processed-profile",
     "gecko_profile",

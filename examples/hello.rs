@@ -61,36 +61,28 @@ async fn baz() {
         let symbol = symbol_map
             .lookup(LookupAddress::Relative(relative_addr as u32))
             .await;
-        // println!(
-        //     "********** svma: {:?}, relative_addr: {:?}, sym: {:?}",
-        //     addr2 as *const (), relative_addr as *const (), symbol
-        // );
+        println!(
+            "********** svma: {:?}, relative_addr: {:?}, sym: {:?}",
+            addr2 as *const (), relative_addr as *const (), symbol
+        );
     }
 
     // manual
     // addr: 0x10000086d, sym: "__ZN5hello18fofsadfklhflkadfsa28_$u7b$$u7b$closure$u7d$$u7d$17h0ac7948ac1096cb8E"
-    let symbol = symbol_map.lookup(LookupAddress::Svma(0x100000010)).await;
-
-    println!("manulllllll symbol: {:?}", &symbol);
+    // let symbol = symbol_map.lookup(LookupAddress::Svma(0x100000010)).await;
+    // println!("manulllllll symbol: {:?}", &symbol);
 }
 
 async fn create_symbol_manager() -> SymbolMap {
     let config = SymbolManagerConfig::default();
     let symbol_manager = SymbolManager::with_config(config);
 
-    let binary_path = Path::new("/Users/s15255/work/samply/target/debug/examples/hello");
+    let binary_path = Path::new("/home/mox692/work/framehop/samply/target/debug/examples/hello");
     let symbol_map: SymbolMap = symbol_manager
         .load_symbol_map_for_binary_at_path(binary_path, None)
         .await
         .unwrap();
 
-    // for (addr, (idx, sym)) in symbol_map.iter_symbols().enumerate() {
-    //     println!(
-    //         "addr: {:?}, sym: {:?}",
-    //         (addr + 0x100000000) as *const (),
-    //         sym
-    //     );
-    // }
 
     symbol_map
 }

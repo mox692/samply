@@ -38,6 +38,7 @@ flate2 = "1.0.28"
 itertools = "0.13"
 wholesym = { path = "../wholesym" }
 tokio = "1.38.0"
+backtrace = "0.3"
 
 
 [profile.release]
@@ -54,3 +55,7 @@ path = "parent.rs"
 [[example]]
 name = "linux_resolve_aslr"
 path = "linux_resolve_aslr.rs"
+
+[[example]]
+name = "linux_unwind_and_resolve_symbol"
+path = "linux_unwind_and_resolve_symbol.rs"

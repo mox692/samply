@@ -1,0 +1,27 @@
+PID is 569263
+The start address of the first memory range is: 559b067e7000
+559b067e7000-559b067e8000 r--p 00000000 103:05 393367                    /home/mox692/work/framehop/samply/examples/a.out
+559b067e8000-559b067e9000 r-xp 00001000 103:05 393367                    /home/mox692/work/framehop/samply/examples/a.out
+559b067e9000-559b067ea000 r--p 00002000 103:05 393367                    /home/mox692/work/framehop/samply/examples/a.out
+559b067ea000-559b067eb000 r--p 00002000 103:05 393367                    /home/mox692/work/framehop/samply/examples/a.out
+559b067eb000-559b067ec000 rw-p 00003000 103:05 393367                    /home/mox692/work/framehop/samply/examples/a.out
+559b06ff0000-559b07011000 rw-p 00000000 00:00 0                          [heap]
+7f655a59b000-7f655a5bd000 r--p 00000000 103:05 1968292                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f655a5bd000-7f655a735000 r-xp 00022000 103:05 1968292                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f655a735000-7f655a783000 r--p 0019a000 103:05 1968292                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f655a783000-7f655a787000 r--p 001e7000 103:05 1968292                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f655a787000-7f655a789000 rw-p 001eb000 103:05 1968292                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f655a789000-7f655a78f000 rw-p 00000000 00:00 0 
+7f655a7a1000-7f655a7a2000 r--p 00000000 103:05 1968284                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f655a7a2000-7f655a7c5000 r-xp 00001000 103:05 1968284                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f655a7c5000-7f655a7cd000 r--p 00024000 103:05 1968284                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f655a7ce000-7f655a7cf000 r--p 0002c000 103:05 1968284                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f655a7cf000-7f655a7d0000 rw-p 0002d000 103:05 1968284                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f655a7d0000-7f655a7d1000 rw-p 00000000 00:00 0 
+7ffcf62cd000-7ffcf62ef000 rw-p 00000000 00:00 0                          [stack]
+7ffcf631b000-7ffcf631f000 r--p 00000000 00:00 0                          [vvar]
+7ffcf631f000-7ffcf6321000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+main:          0x559b067e83cc
+start_address: 559b067e7000
+relative main: 0x13cc
