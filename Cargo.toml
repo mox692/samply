@@ -5,6 +5,7 @@ members = [
     "benches",
     "examples",
     "fxprof-processed-profile",
+    "framehop_utils",
     "gecko_profile",
     "samply-api",
     "samply-symbols",
