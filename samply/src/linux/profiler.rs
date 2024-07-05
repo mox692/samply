@@ -244,7 +244,8 @@ pub fn start_recording(
         )
         .expect("Couldn't parse libinfo map from profile file");
 
-        start_server_main(profile_filename, server_props, symbol_props, libinfo_map);
+        // browserが開かないように, commentout
+        // start_server_main(profile_filename, server_props, symbol_props, libinfo_map);
     }
 
     let exit_status = match wait_status {
