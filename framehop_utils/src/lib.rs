@@ -14,7 +14,7 @@ use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-pub use wholesym::{SymbolManager, LookupAddress, SymbolManagerConfig, SymbolMap};
+pub use wholesym::{LookupAddress, SymbolManager, SymbolManagerConfig, SymbolMap};
 
 /// load libraries, configure cache or unwinder, etc.
 pub struct UnwindBuilderX86_64 {}
@@ -153,4 +153,6 @@ pub fn read_aslr_offset() -> Result<u64, std::io::Error> {
 }
 
 #[cfg(not(target_os = "linux"))]
-pub fn read_aslr_offset() -> Result<u64, std::io::Error> {}
+pub fn read_aslr_offset() -> Result<u64, std::io::Error> {
+    Ok(0)
+}
