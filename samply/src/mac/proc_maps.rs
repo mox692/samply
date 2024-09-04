@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::ops::{Deref, Range};
+use std::time::{Duration, Instant};
 use std::{mem, ptr};
 
 use dyld_bindings::{dyld_all_image_infos, dyld_image_info};
@@ -583,13 +584,24 @@ fn do_stackwalk(
     let mut iter = stackwalker
         .unwinder
         .iter_frames(pc, regs, stackwalker.cache, &mut read_stack);
-    while let Ok(Some(address)) = iter.next() {
-        frames.push(address);
 
-        if frames.len() >= 10000 {
+    let mut times = vec![];
+    loop {
+        let start = Instant::now();
+        let res = iter.next();
+        let time = start.elapsed();
+        times.push(time);
+        let Ok(Some(address)) = res else {
             break;
-        }
+        };
+        frames.push(address);
     }
+
+    for (i, time) in times.iter().enumerate() {
+        println!("{i} frame:  {:?}", time);
+    }
+    println!("total time: {:?}", times.iter().sum::<Duration>());
+    println!("");
 }
 
 #[derive(Debug)]
