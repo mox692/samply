@@ -367,11 +367,7 @@ impl Helper {
                 }))
             }
             WholesymFileLocation::UrlForSourceFile(url) => {
-                if self.config.verbose {
-                    eprintln!("Trying to get file {url} from a URL");
-                }
-                let bytes = reqwest::get(&url).await?.bytes().await?;
-                Ok(WholesymFileContents::Bytes(bytes))
+                panic!("not implemented")
             }
             WholesymFileLocation::SymsrvFile(filename, hash) => {
                 if self.config.verbose {
@@ -465,54 +461,14 @@ impl Helper {
         Err("No breakpad sym file on server".into())
     }
 
+    #[allow(unused)]
     async fn get_bp_sym_file_from_server(
         &self,
         rel_path: &str,
         server_base_url: &str,
         cache_dir: &Path,
     ) -> FileAndPathHelperResult<WholesymFileContents> {
-        let server_base_url = server_base_url.trim_end_matches('/');
-        let url = format!("{server_base_url}/{rel_path}");
-        if self.config.verbose {
-            eprintln!("Downloading {url}...");
-        }
-        let sym_file_response = reqwest::get(&url).await?.error_for_status()?;
-        let mut stream = sym_file_response.bytes_stream();
-        let dest_path = cache_dir.join(rel_path);
-        if let Some(dir) = dest_path.parent() {
-            tokio::fs::create_dir_all(dir).await?;
-        }
-        if self.config.verbose {
-            eprintln!("Saving bytes to {dest_path:?}.");
-        }
-        let file = tokio::fs::File::create(&dest_path).await?;
-        let mut writer = tokio::io::BufWriter::new(file);
-        use futures_util::StreamExt;
-        let mut parser = BreakpadIndexParser::new();
-        while let Some(item) = stream.next().await {
-            let item = item?;
-            let mut item_slice = item.as_ref();
-            parser.consume(item_slice);
-            tokio::io::copy(&mut item_slice, &mut writer).await?;
-        }
-        drop(writer);
-
-        match parser.finish() {
-            Ok(index) => self.write_symindex(rel_path, index).await?,
-            Err(err) => {
-                if self.config.verbose {
-                    eprintln!("Breakpad parsing for symindex failed: {err}");
-                }
-            }
-        }
-
-        if self.config.verbose {
-            eprintln!("Opening file {:?}", dest_path.to_string_lossy());
-        }
-        let file = File::open(&dest_path)?;
-        Ok(WholesymFileContents::Mmap(unsafe {
-            memmap2::MmapOptions::new().map(&file)?
-        }))
+        panic!("not implemented")
     }
 
     fn symindex_path(&self, rel_path: &str) -> Option<PathBuf> {

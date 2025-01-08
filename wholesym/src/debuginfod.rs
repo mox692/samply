@@ -108,6 +108,7 @@ impl ManualDebuginfodSymbolCache {
         None
     }
 
+    #[allow(unused)]
     async fn get_file_from_server(
         &self,
         buildid: &str,
@@ -115,27 +116,6 @@ impl ManualDebuginfodSymbolCache {
         server_base_url: &str,
         cache_dir: &Path,
     ) -> Result<PathBuf, Box<dyn std::error::Error>> {
-        let server_base_url = server_base_url.trim_end_matches('/');
-        let url = format!("{server_base_url}/buildid/{buildid}/{file_type}");
-        if self.verbose {
-            eprintln!("Downloading {url}...");
-        }
-        let sym_file_response = reqwest::get(&url).await?.error_for_status()?;
-        let mut stream = sym_file_response.bytes_stream();
-        let dest_path = cache_dir.join(buildid).join(file_type);
-        if let Some(dir) = dest_path.parent() {
-            tokio::fs::create_dir_all(dir).await?;
-        }
-        if self.verbose {
-            eprintln!("Saving bytes to {dest_path:?}.");
-        }
-        let file = tokio::fs::File::create(&dest_path).await?;
-        let mut writer = tokio::io::BufWriter::new(file);
-        use futures_util::StreamExt;
-        while let Some(item) = stream.next().await {
-            tokio::io::copy(&mut item?.as_ref(), &mut writer).await?;
-        }
-        drop(writer);
-        Ok(dest_path)
+        panic!("not implemented")
     }
 }
