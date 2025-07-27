@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+#[cfg(feature = "windows-symsrv")]
 use symsrv::{parse_nt_symbol_path, NtSymbolPathEntry};
 
 /// The configuration of a [`SymbolManager`](crate::SymbolManager).
@@ -67,6 +68,7 @@ impl SymbolManagerConfig {
         self
     }
 
+    #[cfg(feature = "windows-symsrv")]
     pub(crate) fn effective_nt_symbol_path(&self) -> Option<Vec<NtSymbolPathEntry>> {
         let respected_env_value = if self.respect_nt_symbol_path {
             std::env::var("_NT_SYMBOL_PATH").ok()
@@ -87,6 +89,11 @@ impl SymbolManagerConfig {
                 })
         }
         path
+    }
+    
+    #[cfg(not(feature = "windows-symsrv"))]
+    pub(crate) fn effective_nt_symbol_path(&self) -> Option<Vec<()>> {
+        None
     }
 
     /// Add a directory to search for breakpad symbol files.

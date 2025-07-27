@@ -15,13 +15,15 @@ keywords = ["symbols", "profiling", "addr2line", "debuginfo"]
 default = []
 # Enable the JSON API interface.
 api = ["samply-api"]
+# Enable Windows symbol server support (PDB downloads)
+windows-symsrv = ["symsrv"]
 
 [dependencies]
 debugid = "0.8.0"
 samply-api = { version = "0.23.1", path = "../samply-api", features = ["send_futures"], optional = true }
 samply-symbols = { version = "0.23.0", path = "../samply-symbols", features = ["send_futures"] }
 # symsrv = { path = "../../symsrv" }
-symsrv = "0.5.2"
+symsrv = { version = "0.5.2", optional = true }
 yoke = "0.7"
 yoke-derive = "0.7"
 libc = "0.2.155"
@@ -35,7 +37,7 @@ uuid = "1"
 #] }
 bytes = "1.6.1"
 memmap2 = "0.9.4"
-tokio = { version = "1.38", features = ["fs"] }
+tokio = { version = "1.38", features = ["fs", "io-util"] }
 futures-util = "0.3.30"
 
 # Needed for moria_mac_spotlight, to find dSYM files
@@ -45,4 +47,4 @@ core-foundation = "0.9.1"
 
 [dev-dependencies]
 futures = "0.3.5"
-tokio = { version = "1.38", features = ["macros"] } # Feature "macros" for #[tokio::test]
+tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] } # Feature "macros" for #[tokio::test]

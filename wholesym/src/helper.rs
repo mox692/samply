@@ -10,6 +10,7 @@ use samply_symbols::{
     FileAndPathHelperResult, FileLocation, LibraryInfo, OptionallySendFuture, PeCodeId,
     SymbolMapTrait,
 };
+#[cfg(feature = "windows-symsrv")]
 use symsrv::{SymsrvDownloader, SymsrvObserver};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use uuid::Uuid;
@@ -241,6 +242,7 @@ impl FileAndPathHelper for FileReadOnlyHelper {
 }
 
 pub struct Helper {
+    #[cfg(feature = "windows-symsrv")]
     symsrv_downloader: Option<SymsrvDownloader>,
     debuginfod_symbol_cache: Option<DebuginfodSymbolCache>,
     known_libs: Mutex<KnownLibs>,
@@ -258,6 +260,7 @@ struct KnownLibs {
 
 impl Helper {
     pub fn with_config(config: SymbolManagerConfig) -> Self {
+        #[cfg(feature = "windows-symsrv")]
         let symsrv_downloader = match config.effective_nt_symbol_path() {
             Some(nt_symbol_path) => {
                 let mut downloader = SymsrvDownloader::new(nt_symbol_path);
@@ -279,6 +282,7 @@ impl Helper {
             None
         };
         Self {
+            #[cfg(feature = "windows-symsrv")]
             symsrv_downloader,
             debuginfod_symbol_cache,
             known_libs: Mutex::new(Default::default()),
@@ -346,15 +350,25 @@ impl Helper {
                         "Trying to get file {filename} {hash} from symbol cache (no download)"
                     );
                 }
-                let file_path = self
-                    .symsrv_downloader
-                    .as_ref()
-                    .unwrap()
-                    .get_file_no_download(&filename, &hash)
-                    .await?;
-                Ok(WholesymFileContents::Mmap(unsafe {
-                    memmap2::MmapOptions::new().map(&File::open(file_path)?)?
-                }))
+                #[cfg(feature = "windows-symsrv")]
+                {
+                    let file_path = self
+                        .symsrv_downloader
+                        .as_ref()
+                        .unwrap()
+                        .get_file_no_download(&filename, &hash)
+                        .await?;
+                    Ok(WholesymFileContents::Mmap(unsafe {
+                        memmap2::MmapOptions::new().map(&File::open(file_path)?)?
+                    }))
+                }
+                #[cfg(not(feature = "windows-symsrv"))]
+                {
+                    Err(std::io::Error::new(
+                        std::io::ErrorKind::Unsupported,
+                        "Windows symbol server support is not enabled"
+                    ).into())
+                }
             }
             WholesymFileLocation::LocalBreakpadFile(path, rel_path) => {
                 if self.config.verbose {
@@ -375,15 +389,25 @@ impl Helper {
                         "Trying to get file {filename} {hash} from symbol cache (download allowed)"
                     );
                 }
-                let file_path = self
-                    .symsrv_downloader
-                    .as_ref()
-                    .unwrap()
-                    .get_file(&filename, &hash)
-                    .await?;
-                Ok(WholesymFileContents::Mmap(unsafe {
-                    memmap2::MmapOptions::new().map(&File::open(file_path)?)?
-                }))
+                #[cfg(feature = "windows-symsrv")]
+                {
+                    let file_path = self
+                        .symsrv_downloader
+                        .as_ref()
+                        .unwrap()
+                        .get_file(&filename, &hash)
+                        .await?;
+                    Ok(WholesymFileContents::Mmap(unsafe {
+                        memmap2::MmapOptions::new().map(&File::open(file_path)?)?
+                    }))
+                }
+                #[cfg(not(feature = "windows-symsrv"))]
+                {
+                    Err(std::io::Error::new(
+                        std::io::ErrorKind::Unsupported,
+                        "Windows symbol server support is not enabled"
+                    ).into())
+                }
             }
             WholesymFileLocation::BreakpadSymbolServerFile(path) => {
                 if self.config.verbose {
@@ -691,6 +715,7 @@ impl FileAndPathHelper for Helper {
                 ));
             }
 
+            #[cfg(feature = "windows-symsrv")]
             if debug_name.ends_with(".pdb") && self.symsrv_downloader.is_some() {
                 // We might find this pdb file with the help of a symbol server.
                 paths.push(CandidatePathInfo::SingleFile(
@@ -709,7 +734,8 @@ impl FileAndPathHelper for Helper {
                     ));
                 }
 
-                if debug_name.ends_with(".pdb") && self.symsrv_downloader.is_some() {
+                #[cfg(feature = "windows-symsrv")]
+            if debug_name.ends_with(".pdb") && self.symsrv_downloader.is_some() {
                     // We might find this pdb file with the help of a symbol server.
                     paths.push(CandidatePathInfo::SingleFile(
                         WholesymFileLocation::SymsrvFile(
@@ -890,6 +916,7 @@ impl FileAndPathHelper for Helper {
         }
 
         if !might_be_fake_jit_file(&info) {
+            #[cfg(feature = "windows-symsrv")]
             if let (Some(_symbol_cache), Some(name), Some(CodeId::PeCodeId(code_id))) =
                 (&self.symsrv_downloader, &info.name, &info.code_id)
             {
@@ -1028,10 +1055,12 @@ fn might_be_fake_jit_file(info: &LibraryInfo) -> bool {
     matches!(&info.name, Some(name) if (name.starts_with("jitted-") && name.ends_with(".so")) || name.contains("jit_app_cache:"))
 }
 
+#[cfg(feature = "windows-symsrv")]
 struct VerboseSymsrvObserver {
     urls: Mutex<HashMap<u64, String>>,
 }
 
+#[cfg(feature = "windows-symsrv")]
 impl VerboseSymsrvObserver {
     fn new() -> Self {
         Self {
@@ -1040,6 +1069,7 @@ impl VerboseSymsrvObserver {
     }
 }
 
+#[cfg(feature = "windows-symsrv")]
 impl SymsrvObserver for VerboseSymsrvObserver {
     fn on_new_download_before_connect(&self, download_id: u64, url: &str) {
         eprintln!("Connecting to {}...", url);
