@@ -8,6 +8,7 @@ members = [
     "samply-symbols",
     "samply",
     "wholesym",
+    "wholesym-lite",
     "wholesym-addr2line",
     "tools/benchmarks",
     "tools/dump_table",

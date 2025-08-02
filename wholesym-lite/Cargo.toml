@@ -1,0 +1,25 @@
+[package]
+name = "wholesym-lite"
+version = "0.1.0"
+authors = ["Markus Stange <mstange.moz@gmail.com>"]
+edition = "2021"
+rust-version = "1.70"
+description = "A minimal symbol resolution library for local binary files"
+readme = "README.md"
+homepage = "https://github.com/mstange/samply/tree/main/wholesym-lite"
+repository = "https://github.com/mstange/samply"
+license = "MIT OR Apache-2.0"
+keywords = ["symbols", "debuginfo", "addr2line", "dwarf"]
+
+[dependencies]
+# Core dependencies for parsing binary formats
+object = { version = "0.36", features = ["read"] }
+addr2line = "0.24"
+memmap2 = "0.9"
+
+# Utility dependencies
+thiserror = "1.0"
+cpp_demangle = "0.4"
+
+[dev-dependencies]
+tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
